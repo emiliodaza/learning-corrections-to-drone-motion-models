@@ -1,0 +1,12 @@
+{
+  "paired_flights": 12,
+  "residual_wins": 10,
+  "sign_test_p": 0.03857421875,
+  "mean_delta": -0.025999615785675112,
+  "bootstrap_95_CI": [
+    -0.043032985625610386,
+    -0.008250239225436114
+  ],
+  "bootstrap_resamples": 20000,
+  "bootstrap_seed": 42
+}

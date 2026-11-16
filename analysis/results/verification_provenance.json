@@ -1,0 +1,30 @@
+{
+  "purpose": "Re-evaluation of supplied neural weights, with freshly fitted linear baselines; no neural retraining",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "pandas": "2.2.3",
+  "input_sha256": {
+    "archive": "a3e2e83d156b48a95c346c4fd9b3ded0b62781331dc613f1cb9ab285be2b36a8",
+    "test_list": "d59cd589105cf4cd3fcfe0a34a0b4824d6ae2560db13d34b9a7acd169deeb367",
+    "checkpoint": "3a4d837f8f955724a0210b965f42c69065b556a3bb3d6581bf33cbcda6a8b826"
+  },
+  "rows": {
+    "train": 157092,
+    "validation": 35590,
+    "test": 32234
+  },
+  "flights": {
+    "train": 65,
+    "validation": 17,
+    "test": 13
+  },
+  "segments": {
+    "train": 173,
+    "validation": 43,
+    "test": 31
+  },
+  "thrust_coefficient": 1.9986865217381775e-06,
+  "ridge_alpha": 10000,
+  "scaler_max_abs_mean_difference": 1.1102230246251565e-16,
+  "scaler_max_abs_scale_difference": 2.3283064365386963e-10
+}

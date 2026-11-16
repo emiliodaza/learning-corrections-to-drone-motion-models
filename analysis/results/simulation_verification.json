@@ -1,0 +1,163 @@
+{
+  "verification": "Recomputed scores from saved trajectories, physics not rerun",
+  "trajectory_rows": 51858,
+  "trials": 18,
+  "max_absolute_discrepancy": 0.0,
+  "tolerance": 1e-12,
+  "all_settled": true,
+  "any_floor_crossing": false,
+  "summary": "Sample SD is across model-training seeds, not independent plant repetitions",
+  "hashes": {
+    "neurobem_dynamics.npz": "3a4d837f8f955724a0210b965f42c69065b556a3bb3d6581bf33cbcda6a8b826",
+    "isaac-11043212/flight/trajectories.csv": "c436cd1801c6c555e7dc4af0db9e8847272fa6bb220665d454819037e7eec3ae",
+    "isaac-11043212/flight/flight_metrics.csv": "51d0aa14bfc35068402adac908e2384ee3bfe7b7bc76c4d43480d1a37f73ebc8",
+    "isaac-11043212/flight/replay.npz": "a69930295d3845ca2492936e05c0ad8ab129cc9476b7f33fb92292e3a2221e44",
+    "quadrotor_showcase/quadrotor_control.py": "21040401611cfbbc4b6a7893040c6a131d05b8babfc0dee52e863c1325361e72"
+  },
+  "trial_checks": [
+    {
+      "speed_mps": 3.0,
+      "seed": 42,
+      "model": "direct",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.2981162071228027
+    },
+    {
+      "speed_mps": 3.0,
+      "seed": 42,
+      "model": "residual",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.2979466915130615
+    },
+    {
+      "speed_mps": 3.0,
+      "seed": 42,
+      "model": "thrust",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.298712730407715
+    },
+    {
+      "speed_mps": 3.0,
+      "seed": 43,
+      "model": "direct",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.298041582107544
+    },
+    {
+      "speed_mps": 3.0,
+      "seed": 43,
+      "model": "residual",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.2980802059173584
+    },
+    {
+      "speed_mps": 3.0,
+      "seed": 43,
+      "model": "thrust",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.298712730407715
+    },
+    {
+      "speed_mps": 3.0,
+      "seed": 44,
+      "model": "direct",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.2979304790496826
+    },
+    {
+      "speed_mps": 3.0,
+      "seed": 44,
+      "model": "residual",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.297947883605957
+    },
+    {
+      "speed_mps": 3.0,
+      "seed": 44,
+      "model": "thrust",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.298712730407715
+    },
+    {
+      "speed_mps": 6.0,
+      "seed": 42,
+      "model": "direct",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.2942705154418945
+    },
+    {
+      "speed_mps": 6.0,
+      "seed": 42,
+      "model": "residual",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.29371976852417
+    },
+    {
+      "speed_mps": 6.0,
+      "seed": 42,
+      "model": "thrust",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.296211004257202
+    },
+    {
+      "speed_mps": 6.0,
+      "seed": 43,
+      "model": "direct",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.293285369873047
+    },
+    {
+      "speed_mps": 6.0,
+      "seed": 43,
+      "model": "residual",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.2940945625305176
+    },
+    {
+      "speed_mps": 6.0,
+      "seed": 43,
+      "model": "thrust",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.296211004257202
+    },
+    {
+      "speed_mps": 6.0,
+      "seed": 44,
+      "model": "direct",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.293602228164673
+    },
+    {
+      "speed_mps": 6.0,
+      "seed": 44,
+      "model": "residual",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.293506383895874
+    },
+    {
+      "speed_mps": 6.0,
+      "seed": 44,
+      "model": "thrust",
+      "samples": 2881,
+      "duration_s": 24.0,
+      "min_altitude_m": 2.296211004257202
+    }
+  ]
+}

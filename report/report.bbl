@@ -1,0 +1,24 @@
+\begin{thebibliography}{1}
+
+\bibitem{bauersfeld2021neurobem}
+Leonard Bauersfeld, Elia Kaufmann, Philipp Foehn, Sihao Sun, and Davide
+  Scaramuzza.
+\newblock {NeuroBEM}: Hybrid aerodynamic quadrotor model.
+\newblock In {\em Proceedings of Robotics: Science and Systems}, Virtual, July
+  2021.
+\newblock \url{https://doi.org/10.15607/RSS.2021.XVII.042}.
+
+\bibitem{torrente2021mpc}
+Guillem Torrente, Elia Kaufmann, Philipp Foehn, and Davide Scaramuzza.
+\newblock Data-driven {MPC} for quadrotors.
+\newblock {\em IEEE Robotics and Automation Letters}, 6(2):3769--3776, 2021.
+\newblock \url{https://doi.org/10.1109/LRA.2021.3061307}.
+
+\bibitem{neurobemdata}
+{University of Zurich Robotics and Perception Group}.
+\newblock {NeuroBEM}: Dataset documentation and processed flight data.
+\newblock \url{https://rpg.ifi.uzh.ch/neuro_bem/Readme.html}, 2021.
+\newblock Accessed November 13, 2026. Data:
+  \url{https://download.ifi.uzh.ch/rpg/NeuroBEM/}.
+
+\end{thebibliography}

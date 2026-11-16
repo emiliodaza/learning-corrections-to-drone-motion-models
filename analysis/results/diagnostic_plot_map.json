@@ -1,0 +1,14 @@
+[
+  {
+    "rank": 1,
+    "flight_id": "2021-02-23-17-27-24",
+    "segment": "processed_data/merged_2021-02-23-17-27-24_seg_1.csv",
+    "mean_flight_residual_rmse": 1.0652859080230945
+  },
+  {
+    "rank": 2,
+    "flight_id": "2021-02-23-22-54-17",
+    "segment": "processed_data/merged_2021-02-23-22-54-17_seg_1.csv",
+    "mean_flight_residual_rmse": 0.8987735117018257
+  }
+]
