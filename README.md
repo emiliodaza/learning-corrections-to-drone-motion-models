@@ -12,6 +12,12 @@ A separate Isaac Sim/PhysX experiment compares controllers during braking and cr
 - [Presentation PDF](presentation/slides.pdf) and [Beamer source](presentation/slides.tex). Five slides with the MP4 attached on slide 4.
 - [Drone video](presentation/media/drone_demo.mp4) and [timed speaker notes](presentation/presentation_notes.md).
 
+## Code and dataset
+
+- **Code.** The executed notebook contains the preprocessing, model training, and held-out evaluation. The Isaac Sim scripts contain the braking and gust benchmark. [Training and evaluation notebook](Learning%20Corrections%20to%20Drone%20Models.ipynb) · [Isaac Sim source](quadrotor_showcase/)
+- **Dataset.** Download the University of Zurich's processed NeuroBEM flight logs (657 MB) and official test-flight list. The split manifest records which flights this project uses for training, validation, and testing. [Processed flight archive](https://download.ifi.uzh.ch/rpg/NeuroBEM/processed_data.zip) · [Official test-flight list](https://download.ifi.uzh.ch/rpg/NeuroBEM/testset.txt) · [Dataset documentation](https://rpg.ifi.uzh.ch/neuro_bem/Readme.html) · [Project split manifest](analysis/results/flight_splits.csv)
+- **Simulation data.** The saved trajectories and metrics are included in this repository. [Isaac Sim flight logs](isaac-11043212/flight/)
+
 ## Repository layout
 
 | Location | Contents |
