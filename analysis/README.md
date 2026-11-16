@@ -1,46 +1,26 @@
-# Reproduction guide
+# Reproducing the experiments
 
-Run the commands below from the repository root.
+The project has two experiments. The first evaluates acceleration predictors on held-out NeuroBEM flights. The second compares position tracking in a separate Isaac Sim braking and gust benchmark. The steps below distinguish fresh training and simulation from evaluation of the archived model weights and trajectories.
 
-## Build the PDFs
+Run the shell commands from the repository root.
 
-Use a TeX Live installation with article, Beamer, AMS math, graphics, booktabs, caption, microtype, geometry, float, hyperref, attachfile2, and the standard Times text fonts. The sources require no shell escape. From this folder:
+## NeuroBEM data and checkpoint evaluation
 
-```sh
-bash build.sh
-```
+Download the 657 MB [processed flight archive](https://download.ifi.uzh.ch/rpg/NeuroBEM/processed_data.zip) and the [official test flight list](https://download.ifi.uzh.ch/rpg/NeuroBEM/testset.txt) from the University of Zurich. The authors publish the [dataset documentation](https://rpg.ifi.uzh.ch/neuro_bem/Readme.html) separately. Keep the ZIP intact because the verification script reads its CSV segments directly.
 
-This writes `report/report.pdf` and `presentation/slides.pdf` and keeps auxiliary files under `build/`. To build on Overleaf, upload the contents of `report/` or `presentation/` to its own project. Choose `report.tex` or `slides.tex` as the main document.
-
-On slide 4, the poster links to `media/drone_demo.mp4` and the PDF also embeds the MP4 as a file attachment. If the viewer cannot open the video, play `presentation/media/drone_demo.mp4` directly. The video shows a Python replay of saved Isaac Sim/PhysX poses.
-
-## What has been independently verified
-
-`reproduce_checkpoint.py` re-evaluates the six supplied neural networks without retraining them. It independently refits thrust, OLS, and all three ridge candidates on the training partition. It reconstructs the flight split, audits every original segment, and regenerates the principal metrics, speed results, and paired-flight analysis. Every published notebook metric agrees to its displayed precision. NumPy is used for inference and linear algebra; pandas reads the data. Principal verification versions are Python 3.12.14, NumPy 2.3.5, and pandas 2.2.3.
-
-`verify_simulation.py` recomputes all metrics from the 18 archived trajectories, totaling 51,858 rows, and checks them against the supplied metrics CSV to a tolerance of 1e-12. It uses the project's `score_flight` implementation and checks sample counts, time grids, flags, and hashes. This is a consistency check of saved trajectories, not a fresh PhysX execution.
-
-The original neural training environment and hardware were not recorded. Fresh training may differ numerically, especially across CPU/GPU environments. No claim of bitwise training reproducibility or a new Isaac Sim run is made.
-
-## Reproduce checkpoint results
-
-Download the 657 MB public data archive and the test split manifest into `data/`.
-
-Create a Python environment with NumPy 2.3.5 and pandas 2.2.3, or use an existing compatible installation. From the project root:
+Use a Python environment with NumPy and pandas. The archived verification used Python 3.12.14, NumPy 2.3.5, and pandas 2.2.3.
 
 ```sh
+python -m pip install numpy==2.3.5 pandas==2.2.3
 mkdir -p data
-curl -L https://download.ifi.uzh.ch/rpg/NeuroBEM/processed_data.zip -o data/processed_data.zip
-curl -L https://download.ifi.uzh.ch/rpg/NeuroBEM/testset.txt -o data/testset.txt
+curl -fL https://download.ifi.uzh.ch/rpg/NeuroBEM/processed_data.zip -o data/processed_data.zip
+curl -fL https://download.ifi.uzh.ch/rpg/NeuroBEM/testset.txt -o data/testset.txt
 python analysis/reproduce_checkpoint.py \
   --archive data/processed_data.zip \
   --test-list data/testset.txt \
   --checkpoint neurobem_dynamics.npz \
   --output analysis/results
-python analysis/verify_simulation.py --repo . --output analysis/results
 ```
-
-Exact inputs used in this preparation:
 
 | Input | SHA-256 |
 |---|---|
@@ -48,48 +28,64 @@ Exact inputs used in this preparation:
 | `testset.txt` | `d59cd589105cf4cd3fcfe0a34a0b4824d6ae2560db13d34b9a7acd169deeb367` |
 | `neurobem_dynamics.npz` | `3a4d837f8f955724a0210b965f42c69065b556a3bb3d6581bf33cbcda6a8b826` |
 
-`results/verification_provenance.json` stores verification versions, hashes, sample counts, split counts, selected ridge alpha, and checks against the exported scaler. `flight_splits.csv` lists every segment assignment. `test_metrics_by_run.csv` preserves separate training seeds. `test_metrics.csv` includes overall and per-axis RMSE/MAE. `metrics_by_speed.csv`, `metrics_by_flight.csv`, `paired_high_speed_flights.csv`, and `paired_diagnostics.json` preserve the subgroup and exploratory results. The `simulation_*` files preserve simulation results and checksums.
+The verification script groups segments by original flight ID, reserves every flight in the authors' test list, and reconstructs the seeded train and validation split. It checks the archive before retaining every eighth observation within each segment. It refits the thrust coefficient, ordinary least squares model, and three ridge candidates on the training partition. NumPy evaluates the six archived neural networks using the saved weights and training-fitted scaler. The resulting metrics agree with the executed notebook to the displayed precision.
 
-## Regenerate scientific figures
+| Output in `analysis/results/` | Contents |
+|---|---|
+| `verification_provenance.json` | Environment versions, input hashes, split counts, scaler checks, and selected ridge penalty |
+| `flight_splits.csv`, `data_audit.csv` | Segment assignments and the archive quality checks |
+| `ridge_validation.csv`, `validation_checkpoint_metrics.csv` | Validation scores for the ridge grid and saved neural checkpoints |
+| `test_metrics.csv`, `test_metrics_by_run.csv` | Pooled and per-axis acceleration errors, including individual neural seeds |
+| `metrics_by_speed.csv`, `metrics_by_flight.csv` | Acceleration RMSE by speed group and original flight |
+| `paired_high_speed_flights.csv`, `paired_diagnostics.json` | Exploratory paired comparison on flights with observations at or above 5 m/s |
+| `verified_test_predictions.npz` | Locally generated, row-level prediction arrays used to regenerate the diagnostic figures |
 
-Install Matplotlib in a compatible Python environment. From the project root:
+For the prediction experiment, the standard deviations describe variability across the three training seeds. The paired high-speed analysis uses one error difference per eligible flight.
+
+## Fresh neural training
+
+Open the [executed notebook](../Learning%20Corrections%20to%20Drone%20Models.ipynb) in Google Colab and run its cells in order with NumPy, pandas, scikit-learn, PyTorch, SciPy, Matplotlib, and ipywidgets available. The notebook downloads the same archive and test flight list, fits the baselines and neural networks, and saves the selected weights to `results/neurobem_dynamics.npz` in the notebook runtime. A local Jupyter run needs equivalents for the `!wget` commands and the `google.colab.files` export cell. The video display cell is optional.
+
+The notebook specifies the grouped split, sampling stride, input features, ridge grid, neural architecture, Adam settings, paired seeds, and validation checkpoint selection. The original training hardware and full environment versions are unrecorded. Compare fresh runs with the archived scores while allowing for numerical differences across hardware and software versions.
+
+## Archived Isaac Sim results
+
+The [archived trial files](../isaac-11043212/flight/) contain 18 trajectories for two initial speeds, three training seeds, and three controllers. Recompute the trial metrics and inspect the summary with NumPy installed:
+
+```sh
+python analysis/verify_simulation.py --repo . --output analysis/results
+python quadrotor_showcase/present_showcase.py isaac-11043212
+```
+
+`verify_simulation.py` uses the project's `score_flight` function to score all 51,858 saved trajectory rows. It checks trial keys, sample counts, timestamps, and recovery flags, and compares the numeric metrics with the archived CSV using a tolerance of `1e-12`. The recorded verification found zero numerical discrepancy. The script writes `simulation_aggregate.csv`, `simulation_paired.csv`, `simulation_windows.csv`, and `simulation_verification.json`. This workflow checks the stored simulation output without launching Isaac Sim. The variation across seeds reflects the network checkpoints evaluated on the same simulated plant.
+
+Use `--plot` for the interactive Matplotlib view or `--video` to export an annotated replay. Video export uses Matplotlib, Pillow, and FFmpeg. The [archived replay](../presentation/media/drone_demo.mp4) renders saved simulator poses in Python. The [video provenance](results/video_provenance.md) records its checksum, playback timeline, and figure extraction commands.
+
+## Fresh Isaac Sim benchmark
+
+The [Slurm script](../quadrotor_showcase/run_discovery_showcase.sbatch) records the original cluster setup. It needs an NVIDIA GPU, Apptainer with GPU support, and an Isaac Sim 6.2.0 container named `isaac-sim-6.2.0.sif` at the repository root. Adapt its Slurm partitions and any module setup for the cluster in use.
+
+```sh
+sbatch quadrotor_showcase/run_discovery_showcase.sbatch
+```
+
+The script runs `run_isaac.py --long-run` for the 24-second braking and gust task and saves flight metrics, trajectories, and replay poses under `results/isaac-<job-id>/flight/`. It then renders camera masks. Pass an existing physics job ID as the script's first argument to capture views from that job's saved poses. Fresh physics execution requires the simulator environment. The archived numerical verification above can run independently of that environment.
+
+## Figures and LaTeX
+
+Install Matplotlib and run checkpoint evaluation before regenerating the prediction plots:
 
 ```sh
 python analysis/render_figures.py
 python analysis/plot_simulation.py --repo .
 ```
 
-`render_figures.py` reads `analysis/results/verified_test_predictions.npz` (generated by checkpoint verification) and writes to `report/figures/`, including the two full three-axis diagnostics, the compact vertical/speed comparison, and the paired-flight chart. `plot_simulation.py` reads the archived trajectories. `learning_curves.png` is preserved from the executed notebook because the original per-epoch CSV was not included in the supplied project. Regenerate it by rerunning the notebook; do not imply that its original numerical history was recovered from a raster figure.
+`render_figures.py` reads the locally generated `verified_test_predictions.npz` and writes the two three-axis flight diagnostics, the combined vertical acceleration and speed figure, and the paired-flight chart to `report/figures/`. `plot_simulation.py` reads the archived trajectories and writes the tracking figure. The committed validation learning curves come from the executed notebook. Run the notebook to regenerate its per-epoch values and plot.
 
-## Rerun neural training
-
-Open `Learning Corrections to Drone Models.ipynb` in Google Colab and run its cells in order with NumPy, pandas, scikit-learn, PyTorch, SciPy, Matplotlib, and ipywidgets available. The notebook downloads the archive and test list. A local Jupyter run needs equivalents for the `!wget` download commands and the `google.colab.files` download cell.
-
-The notebook specifies the split rule, stride, features, ridge grid, neural architecture, Adam settings, paired seeds, and checkpoint-selection rule. It saves the selected weights to `results/neurobem_dynamics.npz`. Keeping the existing checkpoint allows comparison against the verified principal result even if retraining differs slightly.
-
-## Reproduce Isaac Sim physics
-
-To inspect the archived flight summary locally with NumPy installed, run:
+Use TeX Live with Beamer, AMS math, graphics, booktabs, caption, microtype, geometry, float, hyperref, attachfile2, standard Times fonts, and BibTeX:
 
 ```sh
-python quadrotor_showcase/present_showcase.py isaac-11043212
+bash build.sh
 ```
 
-Add `--plot` for the interactive Matplotlib view or `--video` to export a new replay. Video export uses Matplotlib, Pillow, and FFmpeg.
-
-The preserved `quadrotor_showcase/run_discovery_showcase.sbatch` documents the original Dartmouth Discovery workflow. It requires the existing NVIDIA Isaac Sim 6.2 container, Apptainer, suitable GPU access, and checkpoint at the expected project path. A complete benchmark uses the script without a previous job ID. Its `--long-run` path runs the 24-second task at both initial speeds and all three seeds. Passing an old job ID reuses physics and only captures views. Adapt cluster partitions and paths to the available account; they are installation-specific.
-
-The archived `isaac-11043212/flight/` files are included so numerical results and plots can be reviewed without a cluster. The finished video is at `presentation/media/drone_demo.mp4` and is embedded as a PDF attachment. Its 13.2 seconds cover 24 simulated seconds: active transients play at 1× and selected quiet intervals at 4×. Full snapshots and cropped three-controller views appear in `report/figures/`; report Figure 3 shows simulation times 1.80 s and 11.80 s. Raw Isaac RGB frames are not bundled. `analysis/results/video_provenance.md` records source hash, timestamps, and extraction commands.
-
-## Rubric coverage and final review
-
-| Rubric area | Location |
-|---|---|
-| Technical implementation and proposal evolution | Report Sections 3 and 7.1; slides 1–2 |
-| Evaluation, leakage prevention, baselines, diagnostics | Report Sections 3–6; slides 2–4 |
-| Interpretation, limitations, specific future work | Report Sections 5–8; slides 4–5 |
-| Written clarity, citations, reproducibility | Report throughout; Section 7.3; this guide and scripts |
-| Generative AI tools, tasks, verification, and locations | Report Section 8.1; slide 5; speaker notes |
-| Individual oral defense | Practice questions in `presentation_notes.md` |
-
-The project is individual, so the group-contribution survey criterion does not apply. The actual oral defense remains the student's responsibility. Before submission, review the AI disclosure for completeness, inspect the source and plots, and rehearse the timed script in your own words. There is no supplied instructor feedback beyond the rubric and seven-page maximum.
+This generates `report/report.pdf` and `presentation/slides.pdf` and writes auxiliary files below `build/`. For Overleaf, upload the contents of either `report/` or `presentation/` and select `report.tex` or `slides.tex` as the main document. The presentation attaches the replay MP4 and links to it from the poster on slide 4. The [standalone video](../presentation/media/drone_demo.mp4) works independently of PDF viewer support for attachments.

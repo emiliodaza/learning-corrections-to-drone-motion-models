@@ -1,47 +1,39 @@
-# Supplied showcase video audit
+# Simulation replay and figure provenance
 
 ## Source and encoding
 
-Source in this repository: `presentation/media/drone_demo.mp4`. Original export: `isaac-11043212/quadrotor_showcase.mp4`.
-SHA-256: `8d51d6c92da233746e7092c2631571f7ad89f78356ed33efed25227cf5f68a6f`.
-`ffprobe` reports one H.264 video stream, 1920×1080, 30 fps, 396 frames, 13.200 s, 1,036,880 bytes. No audio stream is present. Container encoder is Lavf62.12.102.
+The [archived MP4](../../presentation/media/drone_demo.mp4) is the original `isaac-11043212/quadrotor_showcase.mp4` export. Its SHA-256 is `8d51d6c92da233746e7092c2631571f7ad89f78356ed33efed25227cf5f68a6f`. `ffprobe` reports one H.264 video stream at 1920 × 1080 and 30 frames per second. The file contains 396 frames over 13.200 s and is 1,036,880 bytes. It has no audio stream.
 
-## Actual visual contents and provenance
+The replay shows three synchronized orthographic views of the thrust, direct neural, and residual neural controllers for the 6 m/s initial-speed trial with seed 42. The overlays show the commanded position, actual ground trail, current three-dimensional position error, and error curves. A separate table summarizes the three training seeds at 6 m/s.
 
-Inspected all four extracted frames at original resolution. Each displays three synchronized orthographic drone views for thrust, direct NN and residual NN; commanded floor rings, ground track dots/trails, and a 0.5 m grid; current 3D tracking errors; full 24 s error curves and residual-minus-direct curve with a playhead; and a fixed summary table across seeds 42–44 at 6 m/s. The video shows trial initial speed 6 m/s, model seed42, alongside the full-seed summary.
-
-The visible header explicitly reads **“Python replay of Isaac Sim poses”**. The airframes are drawn in Python from saved simulator poses, as implemented in `replay_scene.py::draw_view` when no native_mask is supplied, and `present_showcase.py::make_video` chooses that exact header when no masks directory is used. Therefore this supplied MP4 is a Python visualization of saved Isaac Sim/PhysX motion, **not actual Isaac camera footage and not real drone footage**. The existing `render/frames/rgb_*.png` are a separate unusable grayscale capture and are not the source of these snapshots. Use the supplied MP4 frames for the requested visual evidence.
+The on-screen label reads “Python replay of Isaac Sim poses.” [`replay_scene.py`](../../quadrotor_showcase/replay_scene.py) renders the airframes from archived PhysX positions and orientations. [`present_showcase.py`](../../quadrotor_showcase/present_showcase.py) composes the views and plots. The distributed video uses the Python renderer with no camera masks.
 
 ## Simulation time and playback
 
-`ReplayScene` defines simulator times as (frame+1)/30 for 720 recorded pose frames, from 0.033333 to24.0 s. Its playback plan has exactly396 output frames, matching this MP4. Active motion plays at1×; selected quiet spans play at4×. “Quiet” requires all three drones below0.10m tracking error and0.08m/s estimated speed, held in a run of at least1.5 s. It excludes windows from0.3 s before gust onset through0.8 s after gust ending.
+The 720 saved pose frames map to simulation time as `(frame + 1) / 30`, from 0.033333 to 24.0 s. The replay shows active motion at 1× and selected quiet spans at 4×. For a span to qualify as quiet, all three drones must stay below 0.10 m tracking error and 0.08 m/s estimated speed for at least 1.5 s. The playback plan excludes the intervals from 0.3 s before gust onset through 0.8 s after each gust ends.
 
-|Video time interval (s)|Displayed simulated interval (s)|Playback|
+| Video time (s) | Displayed simulation time (s) | Playback rate |
 |---|---|---|
-|0.000–5.000|0.033–5.000|1×|
-|5.000–6.133|5.033–9.433|4×|
-|6.133–10.600|9.567–14.000|1×|
-|10.600–13.067|14.033–23.767|4×|
-|13.067–13.200|23.900–24.000|1×|
+| 0.000–5.000 | 0.033–5.000 | 1× |
+| 5.000–6.133 | 5.033–9.433 | 4× |
+| 6.133–10.600 | 9.567–14.000 | 1× |
+| 10.600–13.067 | 14.033–23.767 | 4× |
+| 13.067–13.200 | 23.900–24.000 | 1× |
 
-These endpoints describe the timestamps of frames in each block, not a resampled continuous dynamics record. The video clock visibly states simulation time and playback rate. It is acceptable to say “13.2 s replay of a24 s simulation, with quiet intervals accelerated4×.”
+The simulation ranges give the timestamps of the first and last displayed frames in each block.
 
-## Extracted snapshots
+## Frame extraction
 
-Full frame, exact H.264 decode into PNG, with no drawing, recoloring, or compositing:
+The archived PNGs are full decoded video frames. Frame indices start at zero.
 
-|PNG in `report/figures/`|Zero-based video frame|Video timestamp (s)|Displayed simulation time (s)|Playback|Phase|
-|---|---|---|---|---|---|
-|`snapshot_braking_gust.png`|53|1.766667|1.80|1×|+2m/s crosswind during braking|
-|`snapshot_braking_recovery.png`|74|2.466667|2.50|1×|Braking, first gust ended|
-|`snapshot_hover_gust.png`|251|8.366667|11.80|1×|−3m/s crosswind during hover|
-|`snapshot_hover_recovery.png`|287|9.566667|13.00|1×|Recovery after hover gust|
+| File in `report/figures/` | Frame | Video time (s) | Simulation time (s) | Phase |
+|---|---:|---:|---:|---|
+| `snapshot_braking_gust.png` | 53 | 1.766667 | 1.80 | +2 m/s crosswind during braking |
+| `snapshot_braking_recovery.png` | 74 | 2.466667 | 2.50 | Braking after the first gust |
+| `snapshot_hover_gust.png` | 251 | 8.366667 | 11.80 | −3 m/s crosswind during hover |
+| `snapshot_hover_recovery.png` | 287 | 9.566667 | 13.00 | Recovery after the hover gust |
 
-Recommended pair: **`snapshot_braking_gust.png` and `snapshot_hover_gust.png`**, showing both active disturbances. At1.80s the visible current errors are56.0cm thrust,12.6cm direct,15.7cm residual. At11.80s the visible current errors are34.0cm thrust,34.3cm direct,34.1cm residual. These are instantaneous errors for seed42, not full-trial RMSEs. Snapshot table RMSE values round to one decimal cm and cannot communicate the submillimeter post-gust differences used in the report.
-
-For report layout, a normal crop to the top three-view band may improve drone visibility. Keep controller names and show simulation times in native captions. Captions should identify Python replay of saved PhysX trajectories, speed6m/s and seed42. A full screenshot preserves source and clock labels but all internal text becomes small when scaled to a narrow figure.
-
-Extraction commands used:
+Run from the repository root:
 
 ```sh
 ffmpeg -hide_banner -loglevel error -i presentation/media/drone_demo.mp4 -vf "select=eq(n\,53)" -vsync 0 -frames:v 1 report/figures/snapshot_braking_gust.png
@@ -50,8 +42,6 @@ ffmpeg -hide_banner -loglevel error -i presentation/media/drone_demo.mp4 -vf "se
 ffmpeg -hide_banner -loglevel error -i presentation/media/drone_demo.mp4 -vf "select=eq(n\,287)" -vsync 0 -frames:v 1 report/figures/snapshot_hover_recovery.png
 ```
 
-## Report crops and presentation packaging
+Figure 3 of the report uses rectangular crops of the braking and hover gust frames. Both use the FFmpeg filter `crop=1740:498:90:112` (width, height, x, y). The resulting images are `snapshot_braking_views.png` and `snapshot_hover_views.png`.
 
-Report Figure 3 uses ordinary crops from the full braking/hover frames: `crop=1740:498:90:112` in FFmpeg (width:height:x:y). Files are `snapshot_braking_views.png` and `snapshot_hover_views.png`. Labels and instantaneous errors remain intact; simulation times are provided in LaTeX subcaptions. No drone geometry or simulated values are changed.
-
-The original video is available at `presentation/media/drone_demo.mp4`. The Beamer deck attaches the same MP4 and links to that file from the poster on slide 4. The report contains the two gust snapshots with their simulation times.
+The position errors displayed in those frames are instantaneous values for seed 42. At 1.80 s, the errors are 56.0 cm for thrust, 12.6 cm for direct, and 15.7 cm for residual. At 11.80 s, they are 34.0 cm, 34.3 cm, and 34.1 cm, respectively. See [`simulation_aggregate.csv`](simulation_aggregate.csv) for tracking RMSE across the full trials.

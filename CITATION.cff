@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this research software, please cite the project and the NeuroBEM data source."
+title: "Learning Corrections to Drone Motion Models"
+type: software
+authors:
+  - family-names: "Daza Vigo"
+    given-names: "Emilio Sebastian"
+repository-code: "https://github.com/emiliodaza/learning-corrections-to-drone-motion-models"
+license: MIT
+abstract: "This repository compares linear, direct neural, and residual models for body-frame acceleration prediction on NeuroBEM flights and includes a separate Isaac Sim braking and crosswind benchmark."
+keywords:
+  - quadrotor dynamics
+  - residual learning
+  - NeuroBEM
+  - Isaac Sim
