@@ -4,6 +4,12 @@ Emilio Sebastian Daza Vigo · 2026
 
 Does adding a simple thrust model to a small neural network improve acceleration predictions on unseen quadrotor flights? This project compares five models on recorded NeuroBEM flights, then evaluates the two neural models in a separate Isaac Sim braking and crosswind benchmark.
 
+## Isaac Sim demonstration
+
+[![Three synchronized quadrotors brake, hover, and recover from crosswinds, with tracking error plotted below.](presentation/media/drone_demo_preview.gif)](presentation/media/drone_demo.mp4)
+
+The replay compares thrust, direct neural, and residual neural controllers from a 6 m/s initial speed using seed 42. Isaac Sim/PhysX computed the motion, and Python renders the saved poses alongside synchronized tracking errors. The 13.2-second clip covers 24 seconds of simulation, with quiet intervals played at 4×. [Full-resolution MP4](presentation/media/drone_demo.mp4) · [Replay provenance](analysis/results/video_provenance.md)
+
 ## Results
 
 The models predict three components of body-frame acceleration from body velocity, angular velocity, and squared rotor speeds. The direct network predicts acceleration in one step. The residual network predicts the error of a fitted thrust model and adds that correction to the thrust estimate.
@@ -16,7 +22,7 @@ The models predict three components of body-frame acceleration from body velocit
 
 Acceleration RMSE is in m/s². The neural scores are means across three training seeds. At 5 m/s and above, the residual network reduces pooled RMSE by 2.7% relative to the direct network and improves RMSE on 10 of 12 eligible flights in an exploratory paired comparison. [Overall results and seed variation](analysis/results/test_metrics.csv) · [Speed groups](analysis/results/metrics_by_speed.csv) · [Paired flight scores](analysis/results/paired_high_speed_flights.csv)
 
-In Isaac Sim, with an initial speed of 6 m/s, full-trial position tracking RMSE averaged 19.89 cm for thrust, 10.85 cm for the direct network, and 11.10 cm for the residual network. The benchmark uses a shared drag model and applies neural corrections laterally. These results characterize the simulated controllers under those assumptions. The video uses Python to replay saved PhysX poses. [Simulation results](analysis/results/simulation_aggregate.csv) · [Trajectory and pose logs](isaac-11043212/flight/) · [Demo video](presentation/media/drone_demo.mp4)
+In Isaac Sim, with an initial speed of 6 m/s, full-trial position tracking RMSE averaged 19.89 cm for thrust, 10.85 cm for the direct network, and 11.10 cm for the residual network. The benchmark uses a shared drag model and applies neural corrections laterally. These results characterize the simulated controllers under those assumptions. [Simulation results](analysis/results/simulation_aggregate.csv) · [Trajectory and pose logs](isaac-11043212/flight/)
 
 ## Code and dataset
 
